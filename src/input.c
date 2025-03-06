@@ -12,7 +12,7 @@ resInfo receiver(char *buffer, int *length, FILE *stream) {
 
     buffer = malloc(CHUNK_SIZE);
     if (buffer == NULL)
-        resultSet(&res, DUMMY_ELEMENT.value, 1);
+        resultSet(&res, NULL, 1);
         return res;
 
     int c;
@@ -24,7 +24,7 @@ resInfo receiver(char *buffer, int *length, FILE *stream) {
 
         if (index >= MAX_SIZE) {
             free(buffer);
-            resultSet(&res, DUMMY_ELEMENT.value, 2);
+            resultSet(&res, NULL, 2);
             return res;
         }
         
@@ -38,12 +38,12 @@ resInfo receiver(char *buffer, int *length, FILE *stream) {
 
     *length = index + 2; // +1 since the indices start with 0 and +1 to remember null-terminator char
     *(buffer + index + 1) = '\0';
-    resultSet(&res, DUMMY_ELEMENT.value, 0);
+    resultSet(&res, NULL, 0);
     return res;
 }
 
 
-resInfo typeDeterminant( arrElem *element, char *buffer ) {
+resInfo typeDeterminant( arr *array, char *buffer ) {
     unsigned asciiCode, isDoubleFlag = 1, pointCount = 0;
 
     int length = strlen( buffer );
@@ -86,7 +86,7 @@ void split( char *source, char *separator ) {
 
             stringSlice( source, &sepBuffer, i, i + separatorLength );
 
-            if ( stringCompare( sepBuffer, separator ) == '=' ) {
+            if ( stringComparison( sepBuffer, separator, stringComparison ) == EQUAL ) {
 
                 stringSlice( source, &buffer, i - bufferLength, i );
 

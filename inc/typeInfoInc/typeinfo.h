@@ -1,15 +1,22 @@
 #ifndef H_TYPEINFO
-    #define H_TYPEINFO
+#define H_TYPEINFO
+
+typedef resInfo ( *binaryOperator ) ( const void *arg1, const void *arg2, binaryOperator );
+typedef comparisonResult ( *compareOperator ) ( const void *arg1, const void *arg2, compareOperator);
+typedef resInfo ( *unaryOperator ) ( const void *arg );
+typedef resInfo ( *memoryOperator ) ( void * );
 
 
-    typedef struct _typeInfo {
-        char *typeName;
-        void ( *addOperator )( void *elem1, void *elem2 );
-        void ( *multiplyOperator ) ( void *elem1, void *elem2 );
-        char ( *compareOperator )( void *elem1, void *elem2 );
-        void ( *initOperator ) ( void *element );
-        void ( *printOperator ) ( void *value );
-    } typeInfo;
+typedef struct _TypeInfo {
+    binaryOperator addition;
+    binaryOperator multiplication;
+
+    compareOperator comparison;
+
+    memoryOperator memAllocation;
+    memoryOperator memDisengagement;
+    unaryOperator print;
+} TypeInfo;
 
 
 #endif

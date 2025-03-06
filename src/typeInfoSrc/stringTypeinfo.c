@@ -4,46 +4,49 @@
 #include "../inc/typeInfoInc/stringTypeInfo.h"
 
 
-resInfo stringSlice( arrElem *source, int beginning, int end ) {
+static TypeInfo *stringTI = NULL;
+
+
+resInfo stringSlice( const void *source, void *slice, int beginning, int end ) {
     resInfo res;
 
-    int sourceLen = strlen( (char *) source->value ) + 1;
+    int sourceLen = strlen( (char *) source ) + 1;
 
     if ( end < beginning || beginning > sourceLen || end > sourceLen ) {
-        resultSet(&res, DUMMY_ELEMENT.value, 3);
+        resultSet(&res, NULL, 3);
         return res;
     }
 
-    char *slice = malloc( end - beginning + 1 );
-    if ( *slice == NULL ) {
-        resultSet(&res, DUMMY_ELEMENT.value, 1);
+    slice = malloc( end - beginning + 1 );
+    if ( slice == NULL ) {
+        resultSet(&res, NULL, 1);
         return res;
     }
 
     for ( unsigned i = 0; i < ( end - beginning ); i++ ) {
-        *( slice + i ) = *( (char *) source->value + beginning + i );
+        *( ( char * ) slice + i ) = *( (char *) source + beginning + i );
     }
 
-    *( slice + end - beginning ) = '\0';
+    *( ( char * ) slice + end - beginning ) = '\0';
     
-    resultSet(&res, (void *) slice, 0);
+    resultSet(&res, slice, 0);
     return res;
 }
 
 
-resInfo stringCopy( arrElem *source ) {
+resInfo stringCopy( void *source ) {
     resInfo res;
 
-    int length = strlen( (char *) source->value ) + 1;
+    int length = strlen( (char *) source ) + 1;
 
     char *copy = malloc( length );
     if ( copy == NULL ) {
-        resultSet(&res, DUMMY_ELEMENT.value, 1);
+        resultSet(&res, NULL, 1);
         return res;
     }
 
     for ( unsigned i = 0; i < length; i++ ) {
-        *( copy + i ) = *( (char *) source->value + i );
+        *( ( char * ) copy + i ) = *( (char *) source + i );
     }
 
     resultSet(&res, (void *) copy, 0);
@@ -51,11 +54,11 @@ resInfo stringCopy( arrElem *source ) {
 }
 
 
-resInfo stringConcatenate( arrElem *elem1, arrElem *elem2 ) {
+resInfo stringConcatenation( const void *elem1, const void *elem2, resInfo atomicDummy ) {
     resInfo res;
 
-    int len1 = strlen( (char *) elem1->value );
-    int len2 = strlen( (char *) elem2->value );
+    int len1 = strlen( (char *) elem1 );
+    int len2 = strlen( (char *) elem2 );
 
     char *sum = malloc( len1 + len2 + 1);
 
@@ -67,10 +70,10 @@ resInfo stringConcatenate( arrElem *elem1, arrElem *elem2 ) {
     for ( unsigned index = 0; index < len1 + len2; index++ ) {
 
         if ( index < len1 ) {
-            *( sum + index ) = *( (char *) elem1->value + index );
+            *( sum + index ) = *( (char *) elem1 + index );
         }
         else {
-            *( sum + index ) = *( (char *) elem2->value + index - len1 );
+            *( sum + index ) = *( (char *) elem2 + index - len1 );
         }
     }
 
@@ -79,24 +82,24 @@ resInfo stringConcatenate( arrElem *elem1, arrElem *elem2 ) {
 }
 
 
-char stringCompare( char *elem1, char *elem2 ) {
+comparisonResult stringComparison( const void *elem1, const void *elem2, comparisonResult atomicDummy ) {
     int equalFlag = 1;
-    int len1 = strlen( elem1 );
-    int len2 = strlen( elem2 );
+    int len1 = strlen( (char *) elem1 );
+    int len2 = strlen( (char *) elem2 );
     int minLength;
 
     if ( len1 == len2 ) {
 
         for ( unsigned index = 0; index < len1; index++ ) {
 
-            if ( *( elem1 + index ) != *( elem2 + index ) ) {
+            if ( *( (char *) elem1 + index ) != *( (char *) elem2 + index ) ) {
                 equalFlag = 0;
 
-                if ( (unsigned) *( elem1 + index ) < (unsigned) *( elem2 + index ) ) {
-                    return '<';
+                if ( (unsigned) *( (char *) elem1 + index ) < (unsigned) *( (char *) elem2 + index ) ) {
+                    return LESS;
                 }
                 else {
-                    return '>';
+                    return GREATER;
                 }
             }
         }
@@ -106,20 +109,39 @@ char stringCompare( char *elem1, char *elem2 ) {
 
         for ( unsigned index = 0; index < minLength; index++ ) {
 
-            if ( *( elem1 + index ) != *( elem2 + index ) ) {
+            if ( *( (char *) elem1 + index ) != *( (char *) elem2 + index ) ) {
 
-                if ( (unsigned) *( elem1 + index ) < (unsigned) *( elem2 + index ) ) {
-                    return '<';
+                if ( (unsigned) *( (char *) elem1 + index ) < (unsigned) *( (char *) elem2 + index ) ) {
+                    return LESS;
                 }
                 else {
-                    return '>';
+                    return GREATER;
                 }
 
             }
         }
     }
 
-    if ( equalFlag == 1 ) { return '=' ;}
-    if ( minLength == len1 ) { return '<'; }
-    return '>';
+    if ( equalFlag == 1 ) { return EQUAL ;}
+    if ( minLength == len1 ) { return LESS; }
+    return GREATER;
+}
+
+
+resInfo stringDeletion ( void *arg ) {
+    resInfo res;
+    free( arg );
+    resultSet( &res, NULL, 0 );
+    return res;
+}
+
+
+const TypeInfo getStringTI() {
+    if ( stringTI == NULL ) {
+        stringTI->addition = stringConcatenation;
+        stringTI->comparison = stringComparison;
+
+        stringTI->memAllocation = stringAllocation;
+        stringTI->memDisengagement = stringDeletion;
+    }
 }

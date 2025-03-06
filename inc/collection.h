@@ -4,21 +4,16 @@
     #include "util.h"
 
 
-    typedef struct _arrElem {
-        void *value;
-        typeInfo type;
-    } arrElem;
-
-
     typedef struct _dynamicArray {
         int length;
         int size;
-        arrElem *value;
+        void *value;
+        TypeInfo type;
     } arr;
 
 
-    resInfo append(arr *, arrElem);
-    resInfo prepend(arr *, arrElem);
+    resInfo append(arr *, void *);
+    resInfo prepend(arr *, void *);
     resInfo pop(arr *, int, int *);
     resInfo slice(arr, arr *, int, int);
     resInfo delete(arr *);

@@ -1,21 +1,26 @@
 #ifndef H_UTILITIES
-    #define H_UTILITIES
-    #include "typeInfoInc/typeinfo.h"
-    #include "collection.h"
+#define H_UTILITIES
+#include "typeInfoInc/typeinfo.h"
+#include "collection.h"
 
 
-    const char *EXEC_MESSAGES[] = {"error 1", "error 2"};
-    const arrElem DUMMY_ELEMENT = { NULL };
+const char *EXEC_MESSAGES[] = {"error 1", "error 2"};
 
 
-    typedef struct _resInfo {
-        int execCode;
-        char *execMessage;
-        void *data;
-    } resInfo;
+typedef struct _resInfo {
+    int execCode;
+    void *data;
+} resInfo;
 
 
-    void errorPrint( resInfo );
-    void resultSet( resInfo *, void *, int );
+typedef enum {
+    GREATER = -1,
+    EQUAL = 0,
+    LESS = 1
+} comparisonResult;
+
+
+void errorPrint( resInfo );
+void resultSet( resInfo *, void *, int );
 
 #endif

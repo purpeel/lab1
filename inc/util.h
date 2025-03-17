@@ -7,20 +7,33 @@
 const char *EXEC_MESSAGES[] = {"error 1", "error 2"};
 
 
+typedef ResInfo ( *binaryOperator ) ( const void *arg1, const void *arg2, binaryOperator );
+typedef ComparisonResult ( *compareOperator ) ( const void *arg1, const void *arg2, compareOperator);
+typedef ResInfo ( *unaryOperator ) ( const void *arg );
+typedef SizeResInfo ( *memoryOperator ) ( void * );
+typedef void ( *printOperator ) ( const void *);
+
+
 typedef struct _resInfo {
     int execCode;
     void *data;
-} resInfo;
+} ResInfo;
 
 
-typedef enum {
+typedef struct _sizeResInfo {
+    int execCode;
+    size_t size;
+} SizeResInfo;
+
+
+typedef enum _comparisonResult {
     GREATER = -1,
     EQUAL = 0,
     LESS = 1
-} comparisonResult;
+} ComparisonResult;
 
 
-void errorPrint( resInfo );
-void resultSet( resInfo *, void *, int );
+void errorPrint( ResInfo );
+void resultSet( ResInfo *, void *, int );
 
 #endif

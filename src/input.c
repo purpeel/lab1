@@ -7,8 +7,9 @@
 const unsigned MAX_SIZE = 1024 * 1024;
 const unsigned CHUNK_SIZE = 1024;
 
-resInfo receiver(char *buffer, int *length, FILE *stream) {
-    resInfo res;
+
+ResInfo receiver(char *buffer, int *length, FILE *stream) {
+    ResInfo res;
 
     buffer = malloc(CHUNK_SIZE);
     if (buffer == NULL)
@@ -43,7 +44,10 @@ resInfo receiver(char *buffer, int *length, FILE *stream) {
 }
 
 
-resInfo typeDeterminant( arr *array, char *buffer ) {
+ResInfo typeDeterminant( char *buffer ) {
+    ResInfo res;
+    TypeEnum type;
+
     unsigned asciiCode, isDoubleFlag = 1, pointCount = 0;
 
     int length = strlen( buffer );
@@ -64,19 +68,23 @@ resInfo typeDeterminant( arr *array, char *buffer ) {
     }
 
     if ( isDoubleFlag == 1 && pointCount <= 1 ) {
-        //        
+        type = DOUBLE;
     }
     else {
-        //
+        type = STRING;
     }
+    resultSet( &res, &type, 0 );
+    return res;
 } 
 
 
-void split( char *source, char *separator ) {
+ResInfo split( char *source, char *separator ) {
+    ResInfo buffRes, res;
+    TypeEnum buffType;
     char *buffer, *sepBuffer;
     char c;
 
-    int bufferLength = 0, prevIsSep = 0;
+    int bufferLength = 0, prevIsSep = 0, allowCompareType = 0;
     int sourceLength = strlen( source );
     int separatorLength = strlen ( separator );
 
@@ -89,15 +97,22 @@ void split( char *source, char *separator ) {
             if ( stringComparison( sepBuffer, separator, stringComparison ) == EQUAL ) {
 
                 stringSlice( source, &buffer, i - bufferLength, i );
-
+ 
                 if ( prevIsSep == 0 ) {
                     *( buffer + bufferLength ) = '\0';
-                    puts( buffer );
+                    buffRes = typeDeterminant( buffer );
+                }
+
+                if ( allowCompareType == 1 && buffType != *( TypeEnum * ) buffRes.data ) {
+                    resultSet(&res, buffRes.data, 4);
+                    return res;
                 }
 
                 prevIsSep = 1;
                 bufferLength = 0;
                 i += ( separatorLength - 1 );
+                allowCompareType = 1;
+                buffType = ( TypeEnum * ) buffRes.data;
                 free( buffer );
 
             } else { 
@@ -112,8 +127,13 @@ void split( char *source, char *separator ) {
             stringSlice( source, &buffer, i - bufferLength, i );
 
             if ( prevIsSep == 0 ) {
-                puts( buffer );
+                buffRes = typeDeterminant( buffer );
                 free( buffer );
+            }
+
+            if ( allowCompareType == 1 && buffType != *( TypeEnum * ) buffRes.data ) {
+                resultSet(&res, buffRes.data, 4);
+                return res;
             }
 
             bufferLength = 0;
@@ -123,4 +143,50 @@ void split( char *source, char *separator ) {
             prevIsSep = 0;
         }
     }
+}
+
+
+static ComparisonResult Comparison( const void *elem1, const void *elem2 ) {
+    int equalFlag = 1;
+    int len1 = strlen( (char *) elem1 );
+    int len2 = strlen( (char *) elem2 );
+    int minLength;
+
+    if ( len1 == len2 ) {
+
+        for ( unsigned index = 0; index < len1; index++ ) {
+
+            if ( *( (char *) elem1 + index ) != *( (char *) elem2 + index ) ) {
+                equalFlag = 0;
+
+                if ( (unsigned) *( (char *) elem1 + index ) < (unsigned) *( (char *) elem2 + index ) ) {
+                    return LESS;
+                }
+                else {
+                    return GREATER;
+                }
+            }
+        }
+
+    } else { 
+        minLength = (len1 <= len2) ? len1 : len2;
+
+        for ( unsigned index = 0; index < minLength; index++ ) {
+
+            if ( *( (char *) elem1 + index ) != *( (char *) elem2 + index ) ) {
+
+                if ( (unsigned) *( (char *) elem1 + index ) < (unsigned) *( (char *) elem2 + index ) ) {
+                    return LESS;
+                }
+                else {
+                    return GREATER;
+                }
+
+            }
+        }
+    }
+
+    if ( equalFlag == 1 ) { return EQUAL ;}
+    if ( minLength == len1 ) { return LESS; }
+    return GREATER;
 }

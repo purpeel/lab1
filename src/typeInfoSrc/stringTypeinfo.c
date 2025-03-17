@@ -7,8 +7,31 @@
 static TypeInfo *stringTI = NULL;
 
 
-resInfo stringSlice( const void *source, void *slice, int beginning, int end ) {
-    resInfo res;
+SizeResInfo stringGetSize ( const void *arg ) {
+    SizeResInfo res;
+    size_t size;
+
+    size = strlen( (char *) arg ) + 1;
+
+    res.size = size;
+    res.execCode = 0;
+    return res;
+}
+
+
+SizeResInfo stringDeletion( void *arg ) {
+    SizeResInfo res;
+
+    free( arg );
+
+    res.execCode = 0;
+    res.size = 0;
+    return res;
+}
+
+
+ResInfo stringSlice( const void *source, void *slice, int beginning, int end ) {
+    ResInfo res;
 
     int sourceLen = strlen( (char *) source ) + 1;
 
@@ -34,8 +57,8 @@ resInfo stringSlice( const void *source, void *slice, int beginning, int end ) {
 }
 
 
-resInfo stringCopy( void *source ) {
-    resInfo res;
+ResInfo stringCopy( void *source ) {
+    ResInfo res;
 
     int length = strlen( (char *) source ) + 1;
 
@@ -54,8 +77,8 @@ resInfo stringCopy( void *source ) {
 }
 
 
-resInfo stringConcatenation( const void *elem1, const void *elem2, resInfo atomicDummy ) {
-    resInfo res;
+ResInfo stringConcatenation( const void *elem1, const void *elem2, ResInfo atomicDummy ) {
+    ResInfo res;
 
     int len1 = strlen( (char *) elem1 );
     int len2 = strlen( (char *) elem2 );
@@ -82,7 +105,7 @@ resInfo stringConcatenation( const void *elem1, const void *elem2, resInfo atomi
 }
 
 
-comparisonResult stringComparison( const void *elem1, const void *elem2, comparisonResult atomicDummy ) {
+ComparisonResult stringComparison( const void *elem1, const void *elem2, ComparisonResult atomicDummy ) {
     int equalFlag = 1;
     int len1 = strlen( (char *) elem1 );
     int len2 = strlen( (char *) elem2 );
@@ -128,11 +151,8 @@ comparisonResult stringComparison( const void *elem1, const void *elem2, compari
 }
 
 
-resInfo stringDeletion ( void *arg ) {
-    resInfo res;
-    free( arg );
-    resultSet( &res, NULL, 0 );
-    return res;
+void stringPrint( const void *output ) {
+    printf( "%s\n", ( char *) output );
 }
 
 
@@ -141,7 +161,9 @@ const TypeInfo getStringTI() {
         stringTI->addition = stringConcatenation;
         stringTI->comparison = stringComparison;
 
-        stringTI->memAllocation = stringAllocation;
+        stringTI->getSize = stringGetSize;
         stringTI->memDisengagement = stringDeletion;
+
+        stringTI->print = stringPrint;
     }
 }

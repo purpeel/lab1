@@ -1,16 +1,15 @@
 #ifndef H_STR_TYPEINFO
 #define H_STR_TYPEINFO
 #include "../util.h"
-#include "../collection.h"
 #include "typeinfo.h"
 
 
-resInfo stringSlice( const void *, void *, int, int );
-resInfo stringCopy( const void * ); 
-resInfo stringConcatenation( const void *, const void *, resInfo );
-resInfo stringDeletion ( void * );
-resInfo stringAllocation ( void * );
-comparisonResult stringComparison( const void *, const void *, comparisonResult );
+ResInfo stringSlice( const void *, void *, int, int );
+ResInfo stringCopy( const void * ); 
+ResInfo stringConcatenation( const void *, const void *, ResInfo );
+SizeResInfo stringDeletion( void * );
+SizeResInfo stringGetSize ( const void * );
+ComparisonResult stringComparison( const void *, const void *, ComparisonResult );
 const TypeInfo *getStringTI();
 
 

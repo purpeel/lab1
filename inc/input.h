@@ -1,7 +1,6 @@
 #ifndef H_INPUT
 #define H_INPUT
 #include "util.h"
-#include "typeInfoInc/stringTypeinfo.h"
 
 
 typedef enum _typeEnum {
@@ -10,8 +9,8 @@ typedef enum _typeEnum {
 } TypeEnum;
 
 ResInfo receiver(char *, int *, FILE *);
-ResInfo typeDeterminant( Arr *, char * );
+ResInfo typeDeterminant( const char * );
 static ComparisonResult Comparison( const void *, const void * );
-ResInfo split( char *, char * );
+ResInfo splitAndFill( Arr *, char *, char * );
 
 #endif

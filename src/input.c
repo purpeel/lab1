@@ -44,7 +44,7 @@ ResInfo receiver(char *buffer, int *length, FILE *stream) {
 }
 
 
-ResInfo typeDeterminant( char *buffer ) {
+ResInfo typeDeterminant( const char *buffer ) {
     ResInfo res;
     TypeEnum type;
 
@@ -78,11 +78,13 @@ ResInfo typeDeterminant( char *buffer ) {
 } 
 
 
-ResInfo split( char *source, char *separator ) {
+ResInfo splitAndFill( Arr *array, char *source, char *separator ) {
     ResInfo buffRes, res;
     TypeEnum buffType;
     char *buffer, *sepBuffer;
     char c;
+
+    void *elem; 
 
     int bufferLength = 0, prevIsSep = 0, allowCompareType = 0;
     int sourceLength = strlen( source );
@@ -94,7 +96,7 @@ ResInfo split( char *source, char *separator ) {
 
             stringSlice( source, &sepBuffer, i, i + separatorLength );
 
-            if ( stringComparison( sepBuffer, separator, stringComparison ) == EQUAL ) {
+            if ( Comparison( sepBuffer, separator, Comparison ) == EQUAL ) {
 
                 stringSlice( source, &buffer, i - bufferLength, i );
  
@@ -106,6 +108,10 @@ ResInfo split( char *source, char *separator ) {
                 if ( allowCompareType == 1 && buffType != *( TypeEnum * ) buffRes.data ) {
                     resultSet(&res, buffRes.data, 4);
                     return res;
+                } else {
+                    voidPtrRecorder( elem, buffer );
+                    append( array, elem ); // most questionable yet and probably incorrect
+                    array->type.typeName = *(TypeEnum *) buffRes.data;
                 }
 
                 prevIsSep = 1;
@@ -134,6 +140,9 @@ ResInfo split( char *source, char *separator ) {
             if ( allowCompareType == 1 && buffType != *( TypeEnum * ) buffRes.data ) {
                 resultSet(&res, buffRes.data, 4);
                 return res;
+            } else {
+                append( array, buffer );
+                array->type.typeName = *(TypeEnum *) buffRes.data;
             }
 
             bufferLength = 0;
@@ -143,6 +152,10 @@ ResInfo split( char *source, char *separator ) {
             prevIsSep = 0;
         }
     }
+    free( source );
+
+    resultSet(&res, NULL, 0);
+    return res;
 }
 
 

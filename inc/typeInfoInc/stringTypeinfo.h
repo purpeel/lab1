@@ -7,8 +7,8 @@
 ResInfo stringSlice( const void *, void *, int, int );
 ResInfo stringCopy( const void * ); 
 ResInfo stringConcatenation( const void *, const void *, ResInfo );
-SizeResInfo stringDeletion( void * );
-SizeResInfo stringGetSize ( const void * );
+unaryOperator stringDeletion( void *, ResInfo );
+SizeResInfo stringGetSize ();
 ComparisonResult stringComparison( const void *, const void *, ComparisonResult );
 const TypeInfo *getStringTI();
 

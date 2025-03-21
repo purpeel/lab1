@@ -7,11 +7,11 @@
 static TypeInfo *stringTI = NULL;
 
 
-SizeResInfo stringGetSize ( const void *arg ) {
+SizeResInfo stringGetSize() {
     SizeResInfo res;
     size_t size;
 
-    size = strlen( (char *) arg ) + 1;
+    size = sizeof( char * );
 
     res.size = size;
     res.execCode = 0;
@@ -19,7 +19,7 @@ SizeResInfo stringGetSize ( const void *arg ) {
 }
 
 
-SizeResInfo stringDeletion( void *arg ) {
+ResInfo stringDeletion( void *arg, ResInfo atomicDummy ) {
     SizeResInfo res;
 
     free( arg );
@@ -57,7 +57,7 @@ ResInfo stringSlice( const void *source, void *slice, int beginning, int end ) {
 }
 
 
-ResInfo stringCopy( void *source ) {
+ResInfo stringCopy( const void *source ) {
     ResInfo res;
 
     int length = strlen( (char *) source ) + 1;
@@ -158,6 +158,8 @@ void stringPrint( const void *output ) {
 
 const TypeInfo getStringTI() {
     if ( stringTI == NULL ) {
+        stringTI->typeName = STRING;
+
         stringTI->addition = stringConcatenation;
         stringTI->comparison = stringComparison;
 

@@ -1,23 +1,25 @@
 #ifndef H_COLLECTION
 #define H_COLLECTION
-#include "typeInfoInc/typeinfo.h"
+#include "typeInfoInc/stringTypeinfo.h"
+#include "typeInfoInc/doubleTypeinfo.h"
 #include "util.h"
+#include "input.h"
 
 
 typedef struct _dynamicArray {
     int capacity;
-    int elemQuantuty;
+    int elemQuantity;
     void *head;
     void *tail;
     TypeInfo type;
 } Arr;
 
 
-ResInfo init( Arr * , const int, const char * );
-ResInfo append( Arr *, void * );
+ResInfo init( const char * );
+ResInfo append( Arr *, const void * );
 ResInfo prepend( Arr *, void * );
 ResInfo pop( Arr *, const int, void * );
-ResInfo slice( Arr,  Arr *, const int, const int );
+ResInfo slice( const Arr, const int, const int );
 ResInfo delete( Arr * );
 ResInfo map();
 ResInfo where();

@@ -73,7 +73,7 @@ ResInfo voidPtrRecorder( const char *source ) {
 static ResInfo copy( const char *source ) {
     ResInfo res;
 
-    char *copy = malloc( length );
+    char *copy = malloc(  );
     if ( copy == NULL ) {
         resultSet(&res, NULL, 1);
         return res;

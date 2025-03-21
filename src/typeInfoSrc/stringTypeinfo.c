@@ -20,12 +20,12 @@ SizeResInfo stringGetSize() {
 
 
 ResInfo stringDeletion( void *arg, ResInfo atomicDummy ) {
-    SizeResInfo res;
+    ResInfo res;
 
     free( arg );
 
     res.execCode = 0;
-    res.size = 0;
+    res.data = NULL;
     return res;
 }
 

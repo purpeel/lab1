@@ -1,29 +1,8 @@
 #ifndef H_UTILITIES
 #define H_UTILITIES
+#include <stdbool.h>
 #include <string.h>
 #include "collection.h"
-
-
-const char *EXEC_MESSAGES[] = {"error 1", "error 2"};
-
-
-typedef ResInfo ( *binaryOperator ) ( const void *, const void *, binaryOperator );
-typedef ComparisonResult ( *compareOperator ) ( const void *, const void *, compareOperator );
-typedef ResInfo ( *unaryOperator ) ( void *, unaryOperator );
-typedef SizeResInfo ( *memoryOperator ) ( void *);
-typedef void ( *printOperator ) ( const void *);
-
-
-typedef struct _resInfo {
-    int execCode;
-    void *data;
-} ResInfo;
-
-
-typedef struct _sizeResInfo {
-    int execCode;
-    size_t size;
-} SizeResInfo;
 
 
 typedef enum _comparisonResult {
@@ -33,11 +12,15 @@ typedef enum _comparisonResult {
 } ComparisonResult;
 
 
-void errorPrint( ResInfo );
-void resultSet( ResInfo *, void *, int );
-ResInfo charToDouble( const char * );
-//dont like them down below
-static ResInfo Copy( const char * );
-ResInfo voidPtrRecorder( void *, const char * );
-// hate them up there
+typedef int ( *binaryOperator ) ( const elemPtr, const elemPtr, elemPtr );
+typedef int ( *compareOperator ) ( const elemPtr, const elemPtr );
+typedef int ( *unaryOperator ) ( elemPtr );
+typedef size_t ( *memoryOperator ) ();
+typedef void ( *printOperator ) ( const elemPtr );
+typedef bool predicate( const elemPtr );
+
+void errorPrint( int );
+int charToDouble( const char * );
+
+
 #endif

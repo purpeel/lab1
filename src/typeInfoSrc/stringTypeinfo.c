@@ -7,78 +7,42 @@
 static TypeInfo *stringTI = NULL;
 
 
-SizeResInfo stringGetSize() {
-    SizeResInfo res;
+size_t stringGetSize() {
     size_t size;
 
     size = sizeof( char * );
 
-    res.size = size;
-    res.execCode = 0;
-    return res;
+    return size;
 }
 
 
-ResInfo stringDeletion( void *arg, ResInfo atomicDummy ) {
-    ResInfo res;
+int stringDelete( void *arg ) {
+    int res;
 
     free( arg );
 
-    res.execCode = 0;
-    res.data = NULL;
     return res;
 }
 
 
-ResInfo stringSlice( const void *source, void *slice, int beginning, int end ) {
-    ResInfo res;
-
-    int sourceLen = strlen( (char *) source ) + 1;
-
-    if ( end < beginning || beginning > sourceLen || end > sourceLen ) {
-        resultSet(&res, NULL, 3);
-        return res;
-    }
-
-    slice = malloc( end - beginning + 1 );
-    if ( slice == NULL ) {
-        resultSet(&res, NULL, 1);
-        return res;
-    }
-
-    for ( unsigned i = 0; i < ( end - beginning ); i++ ) {
-        *( ( char * ) slice + i ) = *( (char *) source + beginning + i );
-    }
-
-    *( ( char * ) slice + end - beginning ) = '\0';
-    
-    resultSet(&res, slice, 0);
-    return res;
-}
-
-
-ResInfo stringCopy( const void *source ) {
-    ResInfo res;
-
+int stringCopy( const void *source ) {
     int length = strlen( (char *) source ) + 1;
 
     char *copy = malloc( length );
     if ( copy == NULL ) {
-        resultSet(&res, NULL, 1);
-        return res;
+        return 1;
     }
 
     for ( unsigned i = 0; i < length; i++ ) {
         *( ( char * ) copy + i ) = *( (char *) source + i );
     }
 
-    resultSet(&res, (void *) copy, 0);
-    return res;
+    return 0;
 }
 
 
-ResInfo stringConcatenation( const void *elem1, const void *elem2, ResInfo atomicDummy ) {
-    ResInfo res;
+int stringConcatenate( const void *elem1, const void *elem2 ) {
+    int res;
 
     int len1 = strlen( (char *) elem1 );
     int len2 = strlen( (char *) elem2 );
@@ -86,8 +50,7 @@ ResInfo stringConcatenation( const void *elem1, const void *elem2, ResInfo atomi
     char *sum = malloc( len1 + len2 + 1);
 
     if ( sum == NULL ) {
-        resultSet(&res, (void *) sum, 1);
-        return res;
+        return 1;
     }
 
     for ( unsigned index = 0; index < len1 + len2; index++ ) {
@@ -100,12 +63,11 @@ ResInfo stringConcatenation( const void *elem1, const void *elem2, ResInfo atomi
         }
     }
 
-    resultSet(&res, (void *) sum, 0);
-    return res;
+    return 0;
 }
 
 
-ComparisonResult stringComparison( const void *elem1, const void *elem2, ComparisonResult atomicDummy ) {
+ComparisonResult stringCompare( const void *elem1, const void *elem2 ) {
     int equalFlag = 1;
     int len1 = strlen( (char *) elem1 );
     int len2 = strlen( (char *) elem2 );
@@ -156,16 +118,15 @@ void stringPrint( const void *output ) {
 }
 
 
-const TypeInfo getStringTI() {
+const TypeInfo *getStringTI() {
     if ( stringTI == NULL ) {
-        stringTI->typeName = STRING;
-
-        stringTI->addition = stringConcatenation;
-        stringTI->comparison = stringComparison;
+        stringTI->add = stringConcatenate;
+        stringTI->compare = stringCompare;
 
         stringTI->getSize = stringGetSize;
-        stringTI->memDisengagement = stringDeletion;
+        stringTI->destruct = stringDelete;
 
         stringTI->print = stringPrint;
     }
+    return stringTI;    
 }

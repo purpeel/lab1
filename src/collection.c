@@ -3,33 +3,48 @@
 #include "../inc/collection.h"
 
 
-ResInfo init( const char *source ) {
-    ResInfo res;
+int init( const char *source ) {
     Arr *array = malloc( sizeof( Arr * ) );
 
-    res = splitAndFill( array, source, " " );
 
-    if ( ( TypeEnum * ) res.data == STRING ) {
-        array->type = *getStringTI();
-    } else if ( ( TypeEnum * ) res.data == DOUBLE ) {
-        array->type = *getDoubleTI();
-    } else {
-        resultSet( &res, NULL, 6 );
-        return res;
-    }
 
-    array->capacity = 0;
+    array->capacity = 1;
     array->elemQuantity = 0;
     array->head = malloc( array->type.getSize() );
     array->tail = array->head;
     
-    resultSet( &res, ( void * ) array, 0 );
-    return res;
+    return 0;
 }
 
 
-ResInfo append( Arr *array, const void *element ) {
-    if ( array->type == typeDeterminant())
+int engagedMemoryControl( Arr *array ) {
+    void *buffer;
+    
+    if ( array->elemQuantity > ( array->capacity / 2 ) && array->capacity < 1000 ) {
+        buffer = realloc( array->head, array->capacity * array->type.getSize() * 2 );
+        if ( buffer == NULL ) {
+            return 9;
+        } else {
+            array->head = buffer;
+            array->capacity *= 2;
+            ( char * ) array->tail = ( char * ) array->head + ( array->capacity * array->type.getSize() / sizeof( char * ));
+            array->tail = ( void * ) array->tail;
+        }
+    } else {
+        buffer = realloc( array->head, (array->capacity + 100) * array->type.getSize()  );
+        if ( buffer == NULL ) {
+            return 9;
+        } else {
+            array->head = buffer;
+            array->capacity *= 2;
+            ( char * ) array->tail = ( char * ) array->head + ( array->capacity * array->type.getSize() );
+            array->tail = ( void * ) array->tail;
+        }
+    }
+    return 0;
 }
 
 
+int append( Arr *array, const char *element ) {
+    
+}

@@ -10,22 +10,25 @@ typedef struct _dynamicArray {
     int capacity;
     int elemQuantity;
     void *head;
-    void *tail;
+    void *tail; //should always point to the first byte after last element's end 
     TypeInfo type;
 } Arr;
+ 
+
+typedef void *elemPtr;
 
 
-ResInfo init( const char * );
-ResInfo append( Arr *, const void * );
-ResInfo prepend( Arr *, void * );
-ResInfo pop( Arr *, const int, void * );
-ResInfo slice( const Arr, const int, const int );
-ResInfo delete( Arr * );
-ResInfo map();
-ResInfo where();
-ResInfo extend( Arr *, const int );
-ResInfo shrink( Arr * );
-ResInfo getElem( Arr, const int );
+int init( const char * ); // int read( const char *, Arr *, const Typeinfo * );
+int append( Arr *, const elemPtr );
+int prepend( Arr *, const elemPtr );
+int pop( Arr *, const int, elemPtr );
+int slice( const Arr *, Arr *, const int, const int );
+int delete( Arr * );
+int map( Arr *, unaryOperator );
+int where( Arr *, predicate );
+int extend( Arr *, const int );
+int shrink( Arr * );
+int getElem( Arr, const int );
 
 
 #endif

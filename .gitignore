@@ -1,0 +1,6 @@
+*/*.exe
+*/*.o
+*/*.txt
+*/Makefile
+.vscode
+lab1
